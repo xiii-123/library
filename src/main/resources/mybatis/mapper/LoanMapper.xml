@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wyh.mapper.LoanMapper">
+    <select id="getLoanList" resultMap="LoanBU">
+        select * from library.loan
+    </select>
+    <select id="getLoanByUserNo" resultMap="LoanBU">
+        select * from library.loan
+        where userNo=#{userNo}
+    </select>
+    <select id="getLoanByName" resultMap="LoanBU">
+        select *
+        from library.loan,library.bookinfo,library.user,library.book
+       
+        <where>
+            and loan.userNo=user.userNo and loan.bookNo=book.bookNo and book.ISBN=bookinfo.ISBN
+            and bookinfo.bname like concat('%',#{bookName},'%')
+            and user.name like concat('%',#{userName},'%')
+            <if test="start != null">
+                <![CDATA[and DATE_FORMAT(borrowDate,'%Y-%m-%d')>=DATE_FORMAT(#{start},'%Y-%m-%d')]]>
+            </if>
+            <if test="end != null">
+                <![CDATA[and DATE_FORMAT(borrowDate,'%Y-%m-%d')<=DATE_FORMAT(#{end},'%Y-%m-%d')]]>
+            </if>
+        </where>
+    </select>
+    <select id="getLoanByDate" resultType="Loan">
+        select *
+        from library.loan
+
+        <where>
+            <if test="start != null">
+                <![CDATA[and DATE_FORMAT(borrowDate,'%Y-%m-%d')>=DATE_FORMAT(#{start},'%Y-%m-%d')]]>
+            </if>
+            <if test="end != null">
+                <![CDATA[and DATE_FORMAT(borrowDate,'%Y-%m-%d')<=DATE_FORMAT(#{end},'%Y-%m-%d')]]>
+            </if>
+        </where>
+    </select>
+    <select id="getLoanById" resultMap="LoanBU">
+        select * from library.loan where id=#{id}
+    </select>
+    <update id="addLoan" parameterType="Loan">
+        insert into library.loan(bookNo, userNo, borrowDate, keepDays)
+            value (#{book.bookNo},#{user.userNo},#{borrowDate},#{keepDays})
+    </update>
+    <update id="updateLoan" parameterType="Loan">
+        update library.loan set bookNo=#{book.bookNo},userNo=#{user.userNo},borrowDate=#{borrowDate},keepDays=#{keepDays} where id=#{id}
+    </update>
+    <delete id="deleteLoan" parameterType="int">
+        delete from library.loan where id=#{id}
+    </delete>
+    <resultMap id="LoanBU" type="Loan">
+        <result property="id" column="id"/>
+        <result property="borrowDate" column="borrowDate"/>
+        <result property="keepDays" column="keepDays"/>
+        <association property="book" column="bookNo" javaType="Book">
+            <result property="bookNo" column="bookNo"/>
+        </association>
+        <association property="user" column="userNo" javaType="User">
+            <result property="userNo" column="userNo"/>
+        </association>
+    </resultMap>
+</mapper>

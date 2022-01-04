@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wyh.mapper.BookInfoMapper">
+    <select id="getBookInfoList" resultType="BookInfo">
+        select * from library.bookInfo
+    </select>
+    <select id="getBookInfoByName" resultType="BookInfo">
+        select *
+        from library.bookInfo
+        where bname=#{name}
+    </select>
+    <select id="getBookInfoByISBN" resultType="BookInfo">
+        select * from library.bookInfo where ISBN=#{isbn}
+    </select>
+    <update id="addBookInfo" parameterType="BookInfo">
+        insert into library.bookInfo(ISBN, bname, author, press, price, language, pages)
+        value (#{ISBN},#{bname},#{author},#{press},#{price},#{language},#{pages})
+    </update>
+    <update id="updateBookInfo" parameterType="BookInfo">
+        update library.bookInfo
+        set ISBN=#{ISBN},bname=#{location},author=#{author},press=#{press},price=#{price},language=#{language},pages=#{pages}
+        where ISBN=#{isbn}
+    </update>
+    <delete id="deleteBookInfo" parameterType="int">
+        delete from library.bookInfo where ISBN=#{isbn}
+    </delete>
+    
+</mapper>
